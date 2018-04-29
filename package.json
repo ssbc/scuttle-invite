@@ -1,0 +1,17 @@
+{
+  "name": "scuttle-invite",
+  "version": "1.0.0",
+  "description": "Apply invite and response logic to an ssb feature",
+  "main": "index.js",
+  "dependencies": {
+    "scuttle-testbot": "^1.1.6",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.9.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "tape test/**/*.js | tap-spec"
+  },
+  "author": "kyphae",
+  "license": "ISC"
+}
