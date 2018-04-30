@@ -4,11 +4,15 @@
   "description": "Apply invite and response logic to an ssb feature",
   "main": "index.js",
   "dependencies": {
+    "pull-stream": "^3.6.7",
+    "ssb-backlinks": "^0.6.1",
+    "ssb-sort": "^1.1.0"
+  },
+  "devDependencies": {
     "scuttle-testbot": "^1.1.6",
     "tap-spec": "^4.1.1",
     "tape": "^4.9.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "tape test/**/*.js | tap-spec"
   },
