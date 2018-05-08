@@ -1,7 +1,7 @@
 const pull = require('pull-stream')
 const sort = require('ssb-sort')
-const { isInvite, isResponse } = require('ssb-invite-schema')
-const Invite = require('../sync/invite')
+const { isInvite, isResponse } = require('ssb-invites-schema')
+const Invite = require('../sync/build')
 
 module.exports = function (server) {
   return function get (key, cb) {
