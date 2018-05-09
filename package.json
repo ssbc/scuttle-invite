@@ -6,7 +6,8 @@
   "dependencies": {
     "pull-stream": "^3.6.7",
     "ssb-backlinks": "^0.6.1",
-    "ssb-sort": "^1.1.0"
+    "ssb-sort": "^1.1.0",
+    "ssb-private": "^0.1.4"
   },
   "devDependencies": {
     "scuttle-testbot": "^1.1.6",
