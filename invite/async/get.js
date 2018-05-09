@@ -1,27 +1,18 @@
 const pull = require('pull-stream')
 const sort = require('ssb-sort')
-const { isInvite, isResponse } = require('ssb-invites-schema')
+const { isInvite } = require('ssb-invites-schema')
 const Invite = require('../sync/build')
 
 module.exports = function (server) {
   return function get (key, cb) {
     server.get(key, (err, value) => {
-      if (err) return cb(err)
-
-      if (isInvite(value)) {
-        // find response and if exists return invite with child response and { accepted: result } else just return invite
-      } else if (isResponse(value)) {
-        // find invite and return a response with parent invite and { accepted: result }
-        pull(
-          createBacklinkStream(key),
-          pull.filter(msg => msg.root === key)
-        )
-      } else {
-        return cb(new Error('scuttle-invite could not fetch, key provided was not a valid invite or response'))
-      }
-
+      if (err) return cb(err, null)
       pull(
-        createBacklinkStream()
+        createBacklinkStream(key),
+        pull.drain(msg => {
+          var invite = new Invite(server, msg)
+          cb(null, invite)
+        })
       )
     })
   }

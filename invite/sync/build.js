@@ -1,12 +1,13 @@
 const { isInvite } = require('ssb-invites-schema')
-const getResponse = require('../../response/async/get')
 const Response = require('../../response/sync/build')
 
 module.exports = function Invite (server, msg) {
+  const getResponse = require('../../response/async/get')(server)
+
   const { author, content } = msg.value
   var self = content
 
-  self.id = msg.key
+  Object.assign(self, { id: msg.key })
 
   self.isValid = () => {
     isInvite(self)
@@ -37,13 +38,10 @@ module.exports = function Invite (server, msg) {
     self.response = (cb) => {
       if (!cb) throw new Error('provide a callback')
       new Promise((resolve, reject) => {
-        // Do get response
-        var response = null
-        if (response) {
-          resolve(response)
-        } else {
-          reject(new Error('Not yet responded'))
-        }
+        getResponse(self.id, (err, response) => {
+          if (err) reject(err)
+          else resolve(response)
+        })
       }).then(
         resp => cb(null, resp),
         err => cb(err, null)
