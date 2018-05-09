@@ -9,35 +9,11 @@ module.exports = function Invite (server, msg) {
   }
 
   if (self.isValid()) {
-    // Define model methods
-
-    server.whoami((err, whoami) => {
-      if (err) throw err
-      if (canAccept()) {
-        self.accept = (cb) => {
-          if (!cb) return new Error("provide a callback")
-          new Promise ((resolve, reject) => {
-            server.publish({
-              response
-            }, recps, (err, msg) => {
-              if (err) reject(err)
-              else resolve(msg)
-            })
-          }).then(msg => cb(msg), err => cb(msg))
-        }
-      }
-
-      function canAccept () {
-        return self.recps.filter(recp => {
-          return recp !== whoami.id &&
-            recp === msg.author
-        }).length > 0
-      }
-    })
 
     self.recipient = (cb) => {
       if (!cb) return new Error("provide a callback")
-      new Promise ((resolve, reject) => {
+      new Promise((resolve, reject) => {
+        // Do get recipient
         var recipient = null
         if (recipient) {
           resolve(recipient)
@@ -46,23 +22,87 @@ module.exports = function Invite (server, msg) {
           self.errors.push(error)
           reject(error)
         }
-      }).then(msg => cb(msg), err => cb(err))
+      }).then(
+        recp => cb(null, recp),
+        err => cb(err, null)
+      )
     }
 
     self.response = (cb) => {
       if (!cb) return new Error("provide a callback")
-      new Promise ((resolve, reject) => {
+      new Promise((resolve, reject) => {
+        // Do get response
         var response = null
         if (response) {
           resolve(response)
         } else {
           reject(new Error("Not yet responded"))
         }
-      }).then(msg => cb(msg), err => cb(err))
+      }).then(
+        resp => cb(null, resp),
+        err => cb(err, null)
+      )
     }
 
+    server.whoami((err, whoami) => {
+      if (err) throw err
+      if (canReply()) {
+        self.accept = (cb) => {
+          if (!cb) return new Error("provide a callback")
+          new Promise((resolve, reject) => {
+            server.publish({
+              response
+            },
+            [whoami.id, msg.author],
+            (err, resp) => {
+              if (err) reject(err)
+              else resolve(resp)
+            })
+          }).then(
+            resp => cb(null, resp),
+            err => cb(err, null)
+          )
+        }
+
+        self.reject = (cb) => {
+          if (!cb) return new Error("provide a callback")
+          new Promise((resolve, reject) => {
+            server.publish({
+
+            },
+            [whoami.id, msg.author],
+            (err, resp) => {
+              if (err) reject(err)
+              else resolve(resp)
+            })
+          }).then(
+            resp => cb(null, resp),
+            err => cb(err, null)
+          )
+        }
+      }
+
+      function canReply () {
+        return self.recps.filter(recp => {
+          return recp !== whoami.id &&
+            recp === msg.author
+        }).length > 0
+      }
+    })
+
+    self.isAccepted = (cb) => {
+      if (!cb) return new Error("provide a callback")
+      new Promise((resolve, reject) => {
+        self.response((err, response) => {
+          if (err) reject(err)
+          resolve(response.accept)
+        })
+      }).then(
+        bool => cb(null, bool),
+        err => cb(err, null)
+      )
+    }
   }
 
   return self
 }
-
