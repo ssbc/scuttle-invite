@@ -1,11 +1,14 @@
 const { isInvite } = require('ssb-invites-schema')
+const getResponse = require('../../response/async/get')
+const Response = require('../../response/sync/build')
 
 module.exports = function Invite (server, msg) {
   var self = msg.value.content
 
   self.isValid = () => {
     isInvite(self)
-    return self.errors.length == 0 ? true : false
+    self.errors = self.errors || []
+    return self.errors.length === 0 ? true : false
   }
 
   if (self.isValid()) {
