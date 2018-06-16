@@ -1,4 +1,4 @@
-const Invite = require('../../sync/build')
+const Invite = require('../../sync/buildInvite')
 const { isInvite } = require('ssb-invites-schema')
 
 module.exports = function (server) {

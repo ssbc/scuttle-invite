@@ -1,4 +1,4 @@
-const Response = require('../../sync/build')
+const Response = require('../../sync/buildResponse')
 const { isResponse } = require('ssb-invites-schema')
 
 module.exports = function (server) {

@@ -1,10 +1,8 @@
-const Response = require('../../sync/build')
+const Response = require('../sync/buildResponse')
 const { isResponse } = require('ssb-invites-schema')
 const CanReply = require('./canReply')
 
 module.exports = function (server) {
-  const canReply = CanReply(server)
-
   return function reply (params, callback) {
     const response = new Response(params)
     if (!response.isValid()) {
