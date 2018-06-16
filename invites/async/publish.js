@@ -1,14 +1,16 @@
 const Invite = require('../sync/buildInvite')
-const { isInvite } = require('ssb-invites-schema')
+const { isInvite, parseInvite } = require('ssb-invites-schema')
 
 module.exports = function (server) {
   return function publish (params, callback) {
     const invite = new Invite(params)
     if (!invite.isValid()) {
-    console.log(invite)
       var errors = invite.errors.map(e => e.field).join(', ')
       return callback(new Error(`invalid: ${errors}`))
     }
-    server.publish(invite, callback)
+    server.publish(invite, (err, invite) => {
+      if (err) return callback(err)
+      callback(null, parseInvite(invite))
+    })
   }
 }
