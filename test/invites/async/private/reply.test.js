@@ -14,26 +14,45 @@ const publishPrivateReply = require('../../../../invites/async/private/reply')(s
 const canReply = require('../../../../invites/async/canReply')(second)
 
 test('invites.async.private.reply', assert => {
-  assert.plan(1)
+  assert.plan(3)
 
   var recps = [first.id, second.id]
   first.publish({ type: 'event' }, (err, event) => {
-    publishInvite(
-      { root: event.key, body: 'come to my party?', recps: recps },
-      (err, invite) => {
-        publishPrivateReply({
-          root: event.key,
-          branch: invite.key,
-          recps: recps,
-          accept: true
-        }, (err, response) => {
-          if (err) console.log(err)
 
-          assert.ok(response)
-          first.close()
-          second.close()
-        })
+    var inviteParams = {
+      root: event.key,
+      body: 'come to my party?',
+      recps: recps
+    }
+
+    publishInvite(inviteParams, (err, invite) => {
+
+      var replyParams = {
+        root: event.key,
+        branch: invite.id,
+        recps: recps,
+        accept: true
       }
-    )
+
+      publishPrivateReply(replyParams, (err, reply) => {
+        assert.ok(reply, "Publishes a private reply with no errors")
+        assert.notOk(err)
+
+        var should = Object.assign({} , {
+          id: reply.id,
+          version: 'v1',
+          recipient: first.id,
+          author: second.id,
+          timestamp: reply.timestamp,
+          type: 'response'
+        }, replyParams)
+        delete should.recps
+
+        assert.deepEqual(should, reply, 'Returns a decrypted parsed reply object')
+
+        first.close()
+        second.close()
+      })
+    })
   })
 })
