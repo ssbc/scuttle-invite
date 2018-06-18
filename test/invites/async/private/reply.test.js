@@ -1,57 +1,60 @@
-const test = require('tape')
+const { describe } = require('tape-plus')
 const Server = require('scuttle-testbot')
 
-const first = Server
+Server
+  .use(require('ssb-invites-db'))
   .use(require('ssb-private'))
-  .call()
 
-const second = Server
-  .use(require('ssb-private'))
-  .call()
+const PublishPrivateInvite = require('../../../../invites/async/private/publish')
+const { PublishEvent } = require('../../helper')
 
-const publishInvite = require('../../../../invites/async/private/publish')(first)
-const publishPrivateReply = require('../../../../invites/async/private/reply')(second)
-const canReply = require('../../../../invites/async/canReply')(second)
+const PublishInvite = require('../../../../invites/async/publish')
+const PublishPrivateReply = require('../../../../invites/async/private/reply')
 
-test('invites.async.private.reply', assert => {
-  assert.plan(3)
+describe('invites.async.private.reply', test => {
+  let server, grace
+  let publishInvite, publishPrivateReply, publishEvent
+  let params
 
-  var recps = [first.id, second.id]
-  first.publish({ type: 'event' }, (err, event) => {
+  test.beforeEach(t => {
+    first = Server()
+    second = Server()
 
-    var inviteParams = {
-      root: event.key,
-      body: 'come to my party?',
-      recps: recps
+    publishEvent = PublishEvent(first)
+    publishInvite = PublishInvite(first)
+    publishPrivateReply = PublishPrivateReply(second)
+
+    params = {
+      body: 'super secret cabal meeting',
+      recps: [first.id, second.id]
     }
+  })
 
-    publishInvite(inviteParams, (err, invite) => {
+  test.afterEach(t => {
+    server.close()
+  })
 
-      var replyParams = {
-        root: event.key,
-        branch: invite.id,
-        recps: recps,
-        accept: true
-      }
+  test("Publishes a private reply with no errors", (assert, next) => {
+    publishEvent((err, event) => {
+      params = Object.assign(params, { root: event.key })
+      publishInvite(params, (err, invite) => {
+        params = Object.assign(params, { branch: invite.id, accept: true })
+        publishPrivateReply(params, (err, reply) => {
+          assert.ok(reply, "Success")
+          assert.notOk(err, "Errors are null")
 
-      publishPrivateReply(replyParams, (err, reply) => {
-        assert.ok(reply, "Publishes a private reply with no errors")
-        assert.notOk(err)
+          var should = Object.assign({} , {
+            id: reply.id,
+            version: 'v1',
+            recipient: first.id,
+            author: second.id,
+            timestamp: reply.timestamp,
+            type: 'response'
+          }, params)
+          delete should.recps
 
-        var should = Object.assign({} , {
-          id: reply.id,
-          version: 'v1',
-          recipient: first.id,
-          author: second.id,
-          timestamp: reply.timestamp,
-          type: 'response'
-        }, replyParams)
-        delete should.recps
-
-        assert.deepEqual(should, reply, 'Returns a decrypted parsed reply object')
-
-        first.close()
-        second.close()
+          assert.deepEqual(should, reply, 'Returns a decrypted parsed reply object')
+        })
       })
     })
   })

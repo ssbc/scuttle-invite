@@ -1,42 +1,55 @@
-const test = require('tape')
+const { describe } = require('tape-plus')
+const Server = require('scuttle-testbot')
 
-const server = require('scuttle-testbot')
+Server
+  .use(require('ssb-invites-db'))
   .use(require('ssb-private'))
-  .call()
 
-var grace = server.createFeed()
+const PublishPrivateInvite = require('../../../../invites/async/private/publish')
+const { PublishEvent } = require('../../helper')
 
-const publishPrivateInvite = require('../../../../invites/async/private/publish')(server)
+describe('invites.async.private.publish', test => {
+  let server, grace
+  let publishPrivateInvite, publishEvent
+  let params
 
-test('invites.async.private.publish', assert => {
-  assert.plan(3)
+  test.beforeEach(t => {
+    server = Server()
+    grace = server.createFeed()
 
-  var recps = [grace.id, server.id]
-  server.publish({ type: 'event' }, (err, event) => {
+    publishEvent = PublishEvent(server)
+    publishPrivateInvite = PublishPrivateInvite(server)
 
-    var params = {
-      root: event.key,
+    params = {
       body: 'super secret cabal meeting',
       recps: recps
     }
+  })
 
-    publishPrivateInvite(params, (err, invite) => {
-      assert.ok(invite, 'Publishes a private invite with no errors')
-      assert.notOk(err)
+  test.afterEach(t => {
+    server.close()
+  })
 
-      var should = Object.assign({}, {
-        id: invite.id,
-        version: 'v1',
-        recipient: grace.id,
-        author: server.id,
-        timestamp: invite.timestamp,
-        type: 'invite'
-      }, params)
+  test("Publishes a private invite with no errors", (assert, next) => {
+    publishEvent((err, event) => {
+      params = Object.assign(params, { root: event.key })
+      publishPrivateInvite(params, (err, invite) => {
+        assert.ok(invite, 'Success')
+        assert.notOk(err, "Errors are null")
 
-      delete should.recps
-      assert.deepEqual(should, invite, 'Returns a decrypted parsed invite object')
+        var should = Object.assign({
+          id: invite.id,
+          version: 'v1',
+          recipient: grace.id,
+          author: server.id,
+          timestamp: invite.timestamp,
+          type: 'invite'
+        }, params)
+        delete should.recps
 
-      server.close()
+        assert.deepEqual(should, invite, 'Returns a decrypted parsed invite object')
+        next()
+      })
     })
   })
 })

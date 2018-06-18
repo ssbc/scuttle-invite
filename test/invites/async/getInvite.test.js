@@ -1,28 +1,46 @@
-const test = require('tape')
+const { describe } = require('tape-plus')
+const Server = require('scuttle-testbot')
 
-const server = require('scuttle-testbot')
+Server
   .use(require('ssb-invites-db'))
-  .call()
+  .use(require('ssb-private'))
 
 const { parseInvite } = require('ssb-invites-schema')
-const getInvite = require('../../../invites/async/getInvite')(server)
-const publishInvite = require('../../../invites/async/publish')(server)
+const GetInvite = require('../../../invites/async/getInvite')
+const PublishInvite = require('../../../invites/async/publish')
+const { PublishEvent } = require('../../helper')
 
-var grace = server.createFeed()
+describe('invites.async.getInvite', test => {
+  let server, grace
+  let publishInvite, publishEvent, getInvite
 
-test('invites.async.getInvite', assert => {
-  assert.plan(1)
+  test.beforeEach(t => {
+    server = Server()
+    grace = server.createFeed()
 
-  var recps = [server.id, grace.id]
-  server.publish({ type: 'event' }, (err, event) => {
-    publishInvite(
-      { root: event.key, body: 'super secret cabal meeting', recps: recps },
-      (err, invite) => {
-        getInvite(invite.id, (err, gotten) => {
-          assert.deepEqual(invite, gotten)
-          server.close()
-        })
+    publishEvent = PublishEvent(server)
+    publishInvite = PublishInvite(server)
+    getInvite = GetInvite(server)
+  })
+
+  test.afterEach(t => {
+    server.close()
+  })
+
+  test("Returns a parsed Invite", (assert, next) => {
+    publishEvent((err, event) => {
+      var params = {
+        root: event.key,
+        body: 'super secret cabal meeting',
+        recps: [server.id, grace.id]
       }
-    )
+      publishInvite(params, (err, invite) => {
+        getInvite(invite.id, (err, gotten) => {
+          assert.deepEqual(invite, gotten, "publishInvite matches getInvite")
+          assert.notOk(err, "Errors are null")
+          next()
+        })
+      })
+    })
   })
 })

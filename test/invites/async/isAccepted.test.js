@@ -1,15 +1,20 @@
-const test = require('tape')
+const { describe } = require('tape-plus')
 const Server = require('scuttle-testbot')
 
-const first = Server.call()
-const second = Server.call()
+const PublishInvite = require('../../../invites/async/publish')
+const PublishResponse = require('../../../invites/async/reply')
 
-const publishInvite = require('../../../invites/async/publish')(first)
-const publishResponse = require('../../../invites/async/reply')(second)
+describe('invites.async.isAccepted', test => {
+  var first, second
 
-test('invites.async.isAccepted', assert => {
-  assert.end()
-  first.close()
-  second.close()
+  test.beforeEach(t => {
+    first = Server()
+    second = Server()
+  })
+
+  test.afterEach(t => {
+    first.close()
+    second.close()
+  })
 })
 

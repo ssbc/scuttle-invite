@@ -1,37 +1,62 @@
-const test = require('tape')
+const { describe } = require('tape-plus')
 const Server = require('scuttle-testbot')
 
-const first = Server
+Server
+  .use(require('ssb-invites-db'))
   .use(require('ssb-private'))
-  .call()
 
-const second = Server
-  .use(require('ssb-private'))
-  .call()
+const PublishInvite = require('../../../invites/async/publish')
+const CanReply = require('../../../invites/async/canReply')
+const { PublishEvent } = require('../../helper')
 
-const publishInvite = require('../../../invites/async/publish')(first)
-const canReply = require('../../../invites/async/canReply')
+describe('invites.async.canReply', test => {
+  let first, second
+  let publishInvite, publishEvent
+  let params
 
-test('invites.async.canReply', assert => {
-  assert.plan(2)
+  test.beforeEach(t => {
+    first = Server()
+    second = Server()
 
-  var recps = [first.id, second.id]
-  first.publish({ type: 'event' }, (err, event) => {
-    publishInvite(
-      { root: event.key, body: 'come to my party?', recps: recps },
-      (err, invite) => {
+    publishEvent = PublishEvent(server)
+    publishInvite = PublishInvite(first)
 
-        canReply(first)(invite, cannot => {
+    params = {
+      body: 'come to my party?',
+      recps: [first.id, second.id]
+    }
+  })
+
+  test.afterEach(t => {
+    first.close()
+    second.close()
+  })
+
+  test("Cannot reply to one's self", (assert, next) => {
+    publishEvent((err, event) => {
+      params = Object.assign(params, {root: event.key})
+      publishInvite(params, (err, invite) => {
+        CanReply(first)(invite, cannot => {
           assert.notOk(cannot)
-
-          canReply(second)(invite, can => {
-            assert.ok(can)
-
-            first.close()
-            second.close()
-          })
+          next()
         })
-      }
-    )
+      })
+    })
+  })
+
+  test("Cannot reply when not invited", (assert, next) => {
+    next()
+  })
+
+  test("Can reply when invited and not self", (assert, next) => {
+    publishEvent((err, event) => {
+      params = Object.assign(params, {root: event.key})
+      publishInvite(params, (err, invite) => {
+        CanReply(second)(invite, can => {
+          assert.ok(can)
+          next()
+        })
+      })
+    })
   })
 })

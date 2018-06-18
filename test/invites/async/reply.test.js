@@ -1,4 +1,4 @@
-const describe = require('tape-plus').describe
+const { describe } = require('tape-plus')
 const Server = require('scuttle-testbot')
 
 Server.use(require('ssb-private'))
@@ -35,7 +35,7 @@ describe('invites.async.reply', test => {
 
   test("fails to publish a reply when missing a 'root' record", (assert, next) => {
     publishReply(defaultParams, (err, reply) => {
-      assert.ok(err)
+      assert.ok(err, 'Returns an error')
       assert.equal(err.message, "invalid: data.root, data.branch", "Provides an error message")
       next()
     })
