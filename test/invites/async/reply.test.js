@@ -1,41 +1,90 @@
-const test = require('tape')
+const describe = require('tape-plus').describe
 const Server = require('scuttle-testbot')
 
-const first = Server
-  .use(require('ssb-private'))
-  .call()
+Server.use(require('ssb-private'))
 
-const second = Server
-  .use(require('ssb-private'))
-  .call()
+const PublishInvite = require('../../../invites/async/publish')
+const PublishReply = require('../../../invites/async/reply')
 
-const publishInvite = require('../../../invites/async/publish')(first)
-const publishReply = require('../../../invites/async/reply')(second)
-const canReply = require('../../../invites/async/canReply')(second)
+const { PublishEvent } = require('../../helper')
 
-test('invites.async.reply', assert => {
-  assert.plan(1)
+describe('invites.async.reply', test => {
+  let first, second
+  let defaultParams
+  let publishInvite, publishReply, publishEvent
 
-  var recps = [first.id, second.id]
-  first.publish({ type: 'event' }, (err, event) => {
-    publishInvite(
-      { root: event.key, body: 'come to my party?', recps: recps },
-      (err, invite) => {
+  test.beforeEach(t => {
+    first = Server()
+    second = Server()
 
-        publishReply({
+    defaultParams = {
+      body: 'Getting jiggy with it',
+      recps: [first.id, second.id],
+      accept: true
+    }
+
+    publishInvite = PublishInvite(first)
+    publishReply = PublishReply(second)
+    publishEvent = PublishEvent(first)
+  })
+
+  test.afterEach(t => {
+    first.close()
+    second.close()
+  })
+
+  test("fails to publish a reply when missing a 'root' record", (assert, next) => {
+    publishReply(defaultParams, (err, reply) => {
+      assert.ok(err)
+      assert.equal(err.message, "invalid: data.root, data.branch", "Provides an error message")
+      next()
+    })
+  })
+
+  test("fails to publish a reply without an 'invite' record", (assert, next) => {
+    publishEvent((err, event) => {
+      var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
+      publishReply(defaultParamsWithRoot, (err, reply) => {
+        assert.ok(err)
+        assert.equal(err.message, "invalid: data.branch", "Provides an error message")
+        next()
+      })
+    })
+  })
+
+  test("fails to publish a reply when not invited", (assert, next) => {
+    const third = Server()
+    publishEvent((err, event) => {
+      var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
+      publishInvite(defaultParamsWithRoot, (err, invite) => {
+        var replyParams = Object.assign({}, defaultParams, {
           root: event.key,
           branch: invite.id,
-          recps: recps,
-          accept: true
-        }, (err, response) => {
-          if (err) console.log(err)
-
-          assert.ok(response)
-          first.close()
-          second.close()
+          recps: [...defaultParams.recps, third.id]
         })
+        publishReply(replyParams, (err, reply) => {
+          assert.ok(err)
+          assert.equal(err.message, "invalid: not invited")
+          third.close()
+          next()
+        })
+      })
+    })
+  })
 
-      }
-    )
+  test("Successfully publishing an invite", assert => {
+    publishEvent((err, event) => {
+      var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
+      publishInvite(defaultParamsWithRoot, (err, invite) => {
+        var replyParams = Object.assign({}, defaultParams, {
+          root: event.key,
+          branch: invite.id,
+        })
+        publishReply(replyParams, (err, reply) => {
+          assert.ok(reply, "Success")
+          assert.notOk(err, "Errors are null")
+        })
+      })
+    })
   })
 })
