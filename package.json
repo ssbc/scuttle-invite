@@ -20,11 +20,12 @@
   "devDependencies": {
     "pryjs": "^1.0.3",
     "scuttle-testbot": "^1.1.6",
-    "tap-spec": "^4.1.1",
-    "tape": "^4.9.0"
+    "tap-diff": "^0.1.1",
+    "tape": "^4.9.1",
+    "tape-plus": "^1.0.0"
   },
   "scripts": {
-    "test": "tape test/**/*.test.js | tap-spec"
+    "test": "node test/invites/async/reply.test.js | tap-diff"
   },
   "author": "kyphae",
   "license": "ISC"
