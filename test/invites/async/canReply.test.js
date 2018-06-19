@@ -3,12 +3,12 @@ const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
 const CanReply = require('../../../invites/async/canReply')
 
-describe('invites.async.canReply', test => {
+describe('invites.async.canReply', context => {
   let first, second
   let publishInvite, publishEvent
   let params
 
-  test.beforeEach(t => {
+  context.beforeEach(t => {
     first = Server()
     second = Server()
 
@@ -21,12 +21,12 @@ describe('invites.async.canReply', test => {
     }
   })
 
-  test.afterEach(t => {
+  context.afterEach(t => {
     first.close()
     second.close()
   })
 
-  test("Cannot reply to one's self", (assert, next) => {
+  context("Cannot reply to one's self", (assert, next) => {
     publishEvent((err, event) => {
       params = Object.assign(params, {root: event.key})
       publishInvite(params, (err, invite) => {
@@ -38,11 +38,11 @@ describe('invites.async.canReply', test => {
     })
   })
 
-  test("Cannot reply when not invited", (assert, next) => {
+  context("Cannot reply when not invited", (assert, next) => {
     next()
   })
 
-  test("Can reply when invited and not self", (assert, next) => {
+  context("Can reply when invited and not self", (assert, next) => {
     publishEvent((err, event) => {
       params = Object.assign(params, {root: event.key})
       publishInvite(params, (err, invite) => {

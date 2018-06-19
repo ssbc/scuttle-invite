@@ -3,12 +3,12 @@ const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
 const PublishReply = require('../../../invites/async/reply')
 
-describe('invites.async.reply', test => {
+describe('invites.async.reply', context => {
   let first, second
   let defaultParams
   let publishInvite, publishReply, publishEvent
 
-  test.beforeEach(t => {
+  context.beforeEach(t => {
     first = Server()
     second = Server()
 
@@ -23,12 +23,12 @@ describe('invites.async.reply', test => {
     publishEvent = PublishEvent(first)
   })
 
-  test.afterEach(t => {
+  context.afterEach(t => {
     first.close()
     second.close()
   })
 
-  test("fails to publish a reply when missing a 'root' record", (assert, next) => {
+  context("fails to publish a reply when missing a 'root' record", (assert, next) => {
     publishReply(defaultParams, (err, reply) => {
       assert.ok(err, 'Returns an error')
       assert.equal(err.message, "invalid: data.root, data.branch", "Provides an error message")
@@ -36,7 +36,7 @@ describe('invites.async.reply', test => {
     })
   })
 
-  test("fails to publish a reply without an 'invite' record", (assert, next) => {
+  context("fails to publish a reply without an 'invite' record", (assert, next) => {
     publishEvent((err, event) => {
       var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
       publishReply(defaultParamsWithRoot, (err, reply) => {
@@ -47,7 +47,7 @@ describe('invites.async.reply', test => {
     })
   })
 
-  test("fails to publish a reply when not invited", (assert, next) => {
+  context("fails to publish a reply when not invited", (assert, next) => {
     const third = Server()
     publishEvent((err, event) => {
       var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
@@ -67,7 +67,7 @@ describe('invites.async.reply', test => {
     })
   })
 
-  test("Successfully publishing an invite", (assert, next) => {
+  context("Successfully publishing an invite", (assert, next) => {
     publishEvent((err, event) => {
       var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
       publishInvite(defaultParamsWithRoot, (err, invite) => {

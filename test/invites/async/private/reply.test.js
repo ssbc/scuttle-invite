@@ -3,12 +3,12 @@ const { PublishEvent, Server } = require('../../../methods')
 const PublishInvite = require('../../../../invites/async/publish')
 const PublishPrivateReply = require('../../../../invites/async/private/reply')
 
-describe('invites.async.private.reply', test => {
+describe('invites.async.private.reply', context => {
   let first, second
   let publishInvite, publishPrivateReply, publishEvent
   let params
 
-  test.beforeEach(t => {
+  context.beforeEach(t => {
     first = Server()
     second = Server()
 
@@ -22,12 +22,12 @@ describe('invites.async.private.reply', test => {
     }
   })
 
-  test.afterEach(t => {
+  context.afterEach(t => {
     first.close()
     second.close()
   })
 
-  test("Publishes a private reply with no errors", (assert, next) => {
+  context("Publishes a private reply with no errors", (assert, next) => {
     publishEvent((err, event) => {
       params = Object.assign(params, { root: event.key })
       publishInvite(params, (err, invite) => {

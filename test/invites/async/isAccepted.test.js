@@ -3,15 +3,15 @@ const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
 const PublishResponse = require('../../../invites/async/reply')
 
-describe('invites.async.isAccepted', test => {
+describe('invites.async.isAccepted', context => {
   var first, second
 
-  test.beforeEach(t => {
+  context.beforeEach(t => {
     first = Server()
     second = Server()
   })
 
-  test.afterEach(t => {
+  context.afterEach(t => {
     first.close()
     second.close()
   })

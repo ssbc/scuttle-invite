@@ -2,12 +2,12 @@ const { describe } = require('tape-plus')
 const { PublishEvent, Server } = require('../../../methods')
 const PublishPrivateInvite = require('../../../../invites/async/private/publish')
 
-describe('invites.async.private.publish', test => {
+describe('invites.async.private.publish', context => {
   let server, grace
   let publishPrivateInvite, publishEvent
   let params
 
-  test.beforeEach(t => {
+  context.beforeEach(t => {
     server = Server()
     grace = server.createFeed()
 
@@ -20,11 +20,11 @@ describe('invites.async.private.publish', test => {
     }
   })
 
-  test.afterEach(t => {
+  context.afterEach(t => {
     server.close()
   })
 
-  test("Publishes a private invite with no errors", (assert, next) => {
+  context("Publishes a private invite with no errors", (assert, next) => {
     publishEvent((err, event) => {
       params = Object.assign(params, { root: event.key })
       publishPrivateInvite(params, (err, invite) => {
