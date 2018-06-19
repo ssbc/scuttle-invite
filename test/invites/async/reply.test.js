@@ -2,30 +2,30 @@ const { describe } = require('tape-plus')
 const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
 const PublishReply = require('../../../invites/async/reply')
+const GetInvite = require('../../../invites/async/getInvite')
 
 describe('invites.async.reply', context => {
-  let first, second
+  let server, grace
   let defaultParams
-  let publishInvite, publishReply, publishEvent
+  let publishInvite, publishReply, publishEvent, getInvite
 
   context.beforeEach(t => {
-    first = Server()
-    second = Server()
+    server = Server()
+    grace = server.createFeed()
 
     defaultParams = {
       body: 'Getting jiggy with it',
-      recps: [first.id, second.id],
+      recps: [server.id, grace.id],
       accept: true
     }
 
-    publishInvite = PublishInvite(first)
-    publishReply = PublishReply(second)
-    publishEvent = PublishEvent(first)
+    publishEvent = PublishEvent(grace)
+    publishInvite = PublishInvite(grace)
+    publishReply = PublishReply(server)
   })
 
   context.afterEach(t => {
-    first.close()
-    second.close()
+    server.close()
   })
 
   context("fails to publish a reply when missing a 'root' record", (assert, next) => {
@@ -48,19 +48,18 @@ describe('invites.async.reply', context => {
   })
 
   context("fails to publish a reply when not invited", (assert, next) => {
-    const third = Server()
-    publishEvent((err, event) => {
-      var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
-      publishInvite(defaultParamsWithRoot, (err, invite) => {
+    var third = server.createFeed()
+    PublishEvent(third)((err, event) => {
+      var defaultParamsWithRoot = Object.assign({}, defaultParams, { recps: [third.id, grace.id], root: event.key })
+      PublishInvite(third)(defaultParamsWithRoot, (err, invite) => {
         var replyParams = Object.assign({}, defaultParams, {
           root: event.key,
           branch: invite.id,
-          recps: [...defaultParams.recps, third.id]
+          recps: [...defaultParams.recps, server.id]
         })
         publishReply(replyParams, (err, reply) => {
           assert.ok(err)
           assert.equal(err.message, "invalid: you are not invited")
-          third.close()
           next()
         })
       })
