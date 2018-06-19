@@ -1,14 +1,7 @@
 const { describe } = require('tape-plus')
-const Server = require('scuttle-testbot')
-
-Server
-  .use(require('ssb-invites-db'))
-  .use(require('ssb-private'))
-
-const { parseInvite } = require('ssb-invites-schema')
+const { PublishEvent, Server } = require('../../methods')
 const GetInvite = require('../../../invites/async/getInvite')
 const PublishInvite = require('../../../invites/async/publish')
-const { PublishEvent } = require('../../helper')
 
 describe('invites.async.getInvite', test => {
   let server, grace

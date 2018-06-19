@@ -1,12 +1,6 @@
 const { describe } = require('tape-plus')
-const Server = require('scuttle-testbot')
-
-Server
-  .use(require('ssb-invites-db'))
-  .use(require('ssb-private'))
-
+const { PublishEvent, Server } = require('../../../methods')
 const PublishPrivateInvite = require('../../../../invites/async/private/publish')
-const { PublishEvent } = require('../../helper')
 
 describe('invites.async.private.publish', test => {
   let server, grace
@@ -22,7 +16,7 @@ describe('invites.async.private.publish', test => {
 
     params = {
       body: 'super secret cabal meeting',
-      recps: recps
+      recps: [grace.id, server.id]
     }
   })
 

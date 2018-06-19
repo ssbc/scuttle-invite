@@ -1,12 +1,7 @@
 const { describe } = require('tape-plus')
-const Server = require('scuttle-testbot')
-
-Server.use(require('ssb-private'))
-
+const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
 const PublishReply = require('../../../invites/async/reply')
-
-const { PublishEvent } = require('../../helper')
 
 describe('invites.async.reply', test => {
   let first, second
@@ -64,7 +59,7 @@ describe('invites.async.reply', test => {
         })
         publishReply(replyParams, (err, reply) => {
           assert.ok(err)
-          assert.equal(err.message, "invalid: not invited")
+          assert.equal(err.message, "invalid: you are not invited")
           third.close()
           next()
         })
@@ -72,7 +67,7 @@ describe('invites.async.reply', test => {
     })
   })
 
-  test("Successfully publishing an invite", assert => {
+  test("Successfully publishing an invite", (assert, next) => {
     publishEvent((err, event) => {
       var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
       publishInvite(defaultParamsWithRoot, (err, invite) => {
@@ -83,6 +78,7 @@ describe('invites.async.reply', test => {
         publishReply(replyParams, (err, reply) => {
           assert.ok(reply, "Success")
           assert.notOk(err, "Errors are null")
+          next()
         })
       })
     })

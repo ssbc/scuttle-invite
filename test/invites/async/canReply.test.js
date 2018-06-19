@@ -1,13 +1,7 @@
 const { describe } = require('tape-plus')
-const Server = require('scuttle-testbot')
-
-Server
-  .use(require('ssb-invites-db'))
-  .use(require('ssb-private'))
-
+const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
 const CanReply = require('../../../invites/async/canReply')
-const { PublishEvent } = require('../../helper')
 
 describe('invites.async.canReply', test => {
   let first, second
@@ -18,7 +12,7 @@ describe('invites.async.canReply', test => {
     first = Server()
     second = Server()
 
-    publishEvent = PublishEvent(server)
+    publishEvent = PublishEvent(first)
     publishInvite = PublishInvite(first)
 
     params = {

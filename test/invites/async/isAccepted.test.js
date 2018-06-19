@@ -1,6 +1,5 @@
 const { describe } = require('tape-plus')
-const Server = require('scuttle-testbot')
-
+const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
 const PublishResponse = require('../../../invites/async/reply')
 

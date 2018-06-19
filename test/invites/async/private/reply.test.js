@@ -1,18 +1,10 @@
 const { describe } = require('tape-plus')
-const Server = require('scuttle-testbot')
-
-Server
-  .use(require('ssb-invites-db'))
-  .use(require('ssb-private'))
-
-const PublishPrivateInvite = require('../../../../invites/async/private/publish')
-const { PublishEvent } = require('../../helper')
-
+const { PublishEvent, Server } = require('../../../methods')
 const PublishInvite = require('../../../../invites/async/publish')
 const PublishPrivateReply = require('../../../../invites/async/private/reply')
 
 describe('invites.async.private.reply', test => {
-  let server, grace
+  let first, second
   let publishInvite, publishPrivateReply, publishEvent
   let params
 
@@ -31,7 +23,8 @@ describe('invites.async.private.reply', test => {
   })
 
   test.afterEach(t => {
-    server.close()
+    first.close()
+    second.close()
   })
 
   test("Publishes a private reply with no errors", (assert, next) => {
@@ -54,6 +47,7 @@ describe('invites.async.private.reply', test => {
           delete should.recps
 
           assert.deepEqual(should, reply, 'Returns a decrypted parsed reply object')
+          next()
         })
       })
     })

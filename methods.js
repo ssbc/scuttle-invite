@@ -12,8 +12,7 @@ module.exports = {
       getInvite: require('./invites/async/getInvite'),
       getResponse: require('./invites/async/getResponse'),
       canReply: require('./invites/async/canReply'),
-      isAccepted: require('./invites/async/isAccepted'),
-      isRejected: require('./invites/async/isRejected')
+      isAccepted: require('./invites/async/isAccepted')
     },
     sync: {
       isInvite: () => isInvite,

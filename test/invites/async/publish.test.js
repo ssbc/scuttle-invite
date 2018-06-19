@@ -1,10 +1,6 @@
 const { describe } = require('tape-plus')
-const Server = require('scuttle-testbot')
-
-Server.use(require('ssb-private'))
-
+const { PublishEvent, Server } = require('../../methods')
 const PublishInvite = require('../../../invites/async/publish')
-const { PublishEvent } = require('../../helper')
 
 describe('invites.async.publish', test => {
   let server, grace
@@ -31,7 +27,7 @@ describe('invites.async.publish', test => {
   test("Publishing without a 'root' record", (assert, next)=> {
     publishInvite(params, (err, invite) => {
       assert.ok(err, 'Returns an error')
-      assert.equal(err.message: "invalid: data.root")
+      assert.equal(err.message, "invalid: data.root")
       assert.notOk(invite, 'Fails to publish')
       next()
     })
@@ -43,6 +39,7 @@ describe('invites.async.publish', test => {
       publishInvite(params, (err, invite) => {
         assert.ok(invite, 'Success')
         assert.notOk(err, 'Errors are null')
+        next()
       })
     })
   })
