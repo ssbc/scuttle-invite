@@ -2,16 +2,27 @@ const Response = require('../../sync/buildResponse')
 const { isResponse, parseResponse } = require('ssb-invites-schema')
 
 module.exports = function (server) {
+  const getInvite = require('../getInvite')(server)
+
   return function reply (params, callback) {
     const response = new Response(params)
     if (!isResponse(response)) {
       var errors = response.errors.map(e => e.field).join(', ')
       return callback(new Error(`invalid: ${errors}`))
     }
-    server.private.publish(response, response.recps, (err, resp) => {
+    getInvite(response.branch, (err, invite) => {
+      var decryptedInvite = server.private.unbox(invite) || invite
       if (err) return callback(err)
-      var decrypted = server.private.unbox(resp)
-      callback(null, parseResponse(decrypted))
+      var whoami = server.whoami()
+      var notInvited = decryptedInvite &&
+        (decryptedInvite.recipient !== whoami.id)
+      if (notInvited) return callback(new Error(`invalid: you are not invited`))
+
+      server.private.publish(response, response.recps, (err, resp) => {
+        if (err) return callback(err)
+        var decrypted = server.private.unbox(resp)
+        callback(null, parseResponse(decrypted))
+      })
     })
   }
 }

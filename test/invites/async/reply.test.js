@@ -77,6 +77,19 @@ describe('invites.async.reply', context => {
         publishReply(replyParams, (err, reply) => {
           assert.ok(reply, "Success")
           assert.notOk(err, "Errors are null")
+
+          const { id, timestamp } = reply
+          var response = Object.assign({}, {
+            id,
+            author: server.id,
+            recipient: grace.id,
+            timestamp,
+            type: 'response',
+            version: 'v1'
+          }, replyParams)
+          delete response.recps
+
+          assert.deepEqual(reply, response, "Returns a parsed reply")
           next()
         })
       })
