@@ -1,7 +1,7 @@
 {
   "name": "scuttle-invite",
   "version": "1.0.0",
-  "description": "Apply invite and response logic to an ssb feature",
+  "description": "Apply invite and reply logic to an ssb feature",
   "main": "index.js",
   "dependencies": {
     "assert": "^1.4.1",
@@ -12,8 +12,7 @@
     "pull-defer": "^0.2.2",
     "pull-stream": "^3.6.7",
     "ssb-backlinks": "^0.6.1",
-    "ssb-invites-db": "0.0.2",
-    "ssb-invites-schema": "0.0.7",
+    "ssb-msg-content": "^1.0.1",
     "ssb-private": "^0.1.4",
     "ssb-sort": "^1.1.0"
   },
