@@ -1,7 +1,11 @@
 {
   "name": "scuttle-invite",
   "version": "0.0.1",
-  "homepage": "https://github.com/ssbc/scuttle-invite",
+  "homepage": "https://github.com/ssbc/scuttle-invite#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ssbc/scuttle-invite.git"
+  },
   "description": "apply invite and reply logic to an ssb root record",
   "main": "index.js",
   "dependencies": {
