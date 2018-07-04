@@ -14,13 +14,13 @@ invites: {
     publish
     reply
     getInvite
-    getResponse
+    getReply
     canReply
     isAccepted
   },
   sync: {
     isInvite
-    isResponse
+    isReply
   }
 }
 ```

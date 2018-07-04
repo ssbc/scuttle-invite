@@ -1,4 +1,4 @@
-const { isInvite, isResponse } = require('ssb-invites-schema')
+const { isInvite, isReply } = require('ssb-invites-schema')
 
 module.exports = {
   invites: {
@@ -10,13 +10,16 @@ module.exports = {
       publish: require('./invites/async/publish'),
       reply: require('./invites/async/reply'),
       getInvite: require('./invites/async/getInvite'),
-      getResponse: require('./invites/async/getResponse'),
+      getReply: require('./invites/async/getReply'),
       canReply: require('./invites/async/canReply'),
       isAccepted: require('./invites/async/isAccepted')
     },
+    pull: {
+      all: require('./invites/pull/all'),
+    },
     sync: {
       isInvite: () => isInvite,
-      isResponse:  () => isResponse,
+      isReply:  () => isReply,
     }
   }
 }

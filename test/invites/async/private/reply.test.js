@@ -62,17 +62,17 @@ describe('invites.async.private.reply', context => {
           assert.notOk(err, "Errors are null")
 
           const { id, timestamp } = reply
-          var response = Object.assign({}, {
+          var reply = Object.assign({}, {
             id,
             author: server.id,
             recipient: grace.id,
             timestamp,
-            type: 'response',
+            type: 'invite-reply',
             version: 'v1'
           }, replyParams)
-          delete response.recps
+          delete reply.recps
 
-          assert.deepEqual(response, reply, 'Returns a decrypted parsed reply')
+          assert.deepEqual(reply, reply, 'Returns a decrypted parsed reply')
           next()
         })
       })
