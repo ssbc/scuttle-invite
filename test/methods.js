@@ -7,7 +7,7 @@ function PublishEvent (server) {
 
 function Server () {
   return require('scuttle-testbot')
-    .use(require('ssb-invites-db'))
+    .use(require('scuttle-invite-db'))
     .use(require('ssb-private'))
     .use(require('ssb-query'))
     .call()

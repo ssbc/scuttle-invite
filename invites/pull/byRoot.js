@@ -5,7 +5,7 @@ const pullMerge = require('pull-merge')
 const { isMsgId } = require('ssb-ref')
 const merge = require('lodash.merge')
 
-const { isInvite, isReply } = require('ssb-invites-schema')
+const { isInvite, isReply } = require('scuttle-invite-schema')
 
 module.exports = function (server) {
   return function byRoot (opts = {}) {

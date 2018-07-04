@@ -1,5 +1,5 @@
 const Reply = require('../sync/buildReply')
-const { isReply, parseReply } = require('ssb-invites-schema')
+const { isReply, parseReply } = require('scuttle-invite-schema')
 
 module.exports = function (server) {
   const getInvite = require('./getInvite')(server)

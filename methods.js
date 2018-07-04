@@ -1,4 +1,4 @@
-const { isInvite, isReply } = require('ssb-invites-schema')
+const { isInvite, isReply } = require('scuttle-invite-schema')
 
 module.exports = {
   invites: {
