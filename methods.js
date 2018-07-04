@@ -15,7 +15,7 @@ module.exports = {
       isAccepted: require('./invites/async/isAccepted')
     },
     pull: {
-      all: require('./invites/pull/all'),
+      byRoot: require('./invites/pull/byRoot')
     },
     sync: {
       isInvite: () => isInvite,
