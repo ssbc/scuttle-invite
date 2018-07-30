@@ -24,7 +24,7 @@ module.exports = function (server) {
 
     server.publish(invite, (err, data) => {
       if (err) return callback(err)
-      callback(null, parseInvite(data))
+      callback(null, data)
     })
   }
 }

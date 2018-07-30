@@ -34,7 +34,7 @@ module.exports = function (server) {
       server.private.publish(reply, reply.recps, (err, resp) => {
         if (err) return callback(err)
         var decrypted = server.private.unbox(resp)
-        callback(null, parseReply(decrypted))
+        callback(null, decrypted)
       })
     })
   }

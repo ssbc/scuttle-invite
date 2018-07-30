@@ -20,7 +20,7 @@ describe('invites.async.getInvite', context => {
     server.close()
   })
 
-  context("Returns a parsed Invite", (assert, next) => {
+  context("Returns an invite", (assert, next) => {
     publishEvent((err, event) => {
       var params = {
         root: event.key,
@@ -28,7 +28,8 @@ describe('invites.async.getInvite', context => {
         recps: [server.id, grace.id]
       }
       publishInvite(params, (err, invite) => {
-        getInvite(invite.id, (err, gotten) => {
+        getInvite(invite.key, (err, gotten) => {
+          delete invite.timestamp
           assert.deepEqual(invite, gotten, "publishInvite matches getInvite")
           assert.notOk(err, "Errors are null")
           next()

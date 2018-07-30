@@ -1,5 +1,5 @@
 const methods = require('./methods')
-const PLUGIN_DEPS = ['invites', 'private', 'backlinks']
+const PLUGIN_DEPS = ['private', 'query']
 const Inject = require('scuttle-inject')
 
 module.exports = function (server, opts) {

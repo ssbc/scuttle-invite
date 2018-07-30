@@ -1,10 +1,11 @@
 module.exports = function (server) {
   return function canReply (invite, callback) {
-    const { author, recipient } = invite
+    const { value: { author, content: { recps } } } = invite
     server.whoami((err, whoami) => {
-      var bool = (recipient === whoami.id) &&
-        (recipient !== author)
-      callback(bool)
+      let recipients = recps.filter(recp => recp !== whoami.id)
+      if (recipients.length !== 1) return callback(false)
+      let recipient = recipients[0]
+      callback(recipient === author)
     })
   }
 }

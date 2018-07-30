@@ -1,19 +1,19 @@
 const { describe } = require('tape-plus')
 const { PublishEvent, Server } = require('../methods')
-const GetInvite = require('../../invites/async/getInvite')
-const PublishInvite = require('../../invites/async/publish')
+const GetReply = require('../../invites/async/getReply')
+const PublishReply = require('../../invites/async/publish')
 
 describe('invites.async.getReply', context => {
   let server, grace
-  let publishInvite, publishEvent, getInvite
+  let publishReply, publishEvent, getReply
 
   context.beforeEach(t => {
     server = Server()
     grace = server.createFeed()
 
     publishEvent = PublishEvent(server)
-    publishInvite = PublishInvite(server)
-    getInvite = GetInvite(server)
+    publishReply = PublishReply(server)
+    getReply = GetReply(server)
   })
 
   context.afterEach(t => {
@@ -27,9 +27,10 @@ describe('invites.async.getReply', context => {
         body: 'super secret cabal meeting',
         recps: [server.id, grace.id]
       }
-      publishInvite(params, (err, invite) => {
-        getInvite(invite.id, (err, gotten) => {
-          assert.deepEqual(invite, gotten, "publishInvite matches getInvite")
+      publishReply(params, (err, reply) => {
+        getReply(reply.key, (err, gotten) => {
+          delete reply.timestamp
+          assert.deepEqual(reply, gotten, "publishReply matches getReply")
           assert.notOk(err, "Errors are null")
           next()
         })

@@ -3,6 +3,7 @@ const { PublishEvent, Server } = require('../methods')
 const PublishInvite = require('../../invites/async/publish')
 const PublishReply = require('../../invites/async/reply')
 const GetInvite = require('../../invites/async/getInvite')
+const { isReply } = require('scuttle-invite-schema')
 
 describe('invites.async.reply', context => {
   let server, grace
@@ -54,7 +55,7 @@ describe('invites.async.reply', context => {
       PublishInvite(third)(defaultParamsWithRoot, (err, invite) => {
         var replyParams = Object.assign({}, defaultParams, {
           root: event.key,
-          branch: invite.id,
+          branch: invite.key,
           recps: [...defaultParams.recps, server.id]
         })
         publishReply(replyParams, (err, reply) => {
@@ -72,24 +73,12 @@ describe('invites.async.reply', context => {
       publishInvite(defaultParamsWithRoot, (err, invite) => {
         var replyParams = Object.assign({}, defaultParams, {
           root: event.key,
-          branch: invite.id,
+          branch: invite.key,
         })
         publishReply(replyParams, (err, reply) => {
           assert.ok(reply, "Success")
           assert.notOk(err, "Errors are null")
-
-          const { id, timestamp } = reply
-          var reply = Object.assign({}, {
-            id,
-            author: server.id,
-            recipient: grace.id,
-            timestamp,
-            type: 'invite-reply',
-            version: 'v1'
-          }, replyParams)
-          delete reply.recps
-
-          assert.deepEqual(reply, reply, "Returns a parsed reply")
+          assert.ok(isReply(reply))
           next()
         })
       })

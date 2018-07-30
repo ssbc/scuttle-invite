@@ -27,13 +27,15 @@ module.exports = function (server) {
 
     getInvite(reply.branch, (err, invite) => {
       if (err) return callback(err)
+      const { value: { content: { recps } } } = invite
       var whoami = server.whoami()
-      var notInvited = invite.recipient !== whoami.id
+      let recipients = recps.filter(recp => recp !== whoami.id)
+      var notInvited = recipients.length !== 1
       if (notInvited) return callback(new Error(`invalid: you are not invited`))
 
       server.publish(reply, (err, data) => {
         if (err) return callback(err)
-        callback(null, parseReply(data))
+        callback(null, data)
       })
     })
   }
