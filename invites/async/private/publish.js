@@ -1,5 +1,10 @@
-const Invite = require('../../sync/buildInvite')
-const { isInvite, parseInvite } = require('scuttle-invite-schema')
+const {
+  isInvite,
+  parseInvite,
+  versionStrings: {
+    V1_SCHEMA_VERSION_STRING
+  }
+} = require('scuttle-invite-schema')
 
 module.exports = function (server) {
   return function publish (params, callback) {
@@ -9,7 +14,8 @@ module.exports = function (server) {
       version: V1_SCHEMA_VERSION_STRING
     })
 
-    if (!invite.recps || !invite.recps.include(server.id)) invite.recps = [...invite.recps, server.id]
+    if (!invite.recps) invite.recps = []
+    if (!invite.recps.includes(server.id)) invite.recps = [...invite.recps, server.id]
 
     if (!isInvite(invite)) {
       var errors = invite.errors.map(e => e.field).join(', ')
