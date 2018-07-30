@@ -33,10 +33,7 @@ module.exports = function (server) {
       var notInvited = recipients.length !== 1
       if (notInvited) return callback(new Error(`invalid: you are not invited`))
 
-      server.publish(reply, (err, data) => {
-        if (err) return callback(err)
-        callback(null, data)
-      })
+      server.publish(reply, callback)
     })
   }
 }

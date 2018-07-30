@@ -22,9 +22,6 @@ module.exports = function (server) {
       return callback(new Error(`invalid: ${errors}`))
     }
 
-    server.publish(invite, (err, data) => {
-      if (err) return callback(err)
-      callback(null, data)
-    })
+    server.publish(invite, callback)
   }
 }
