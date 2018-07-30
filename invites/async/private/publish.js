@@ -3,7 +3,14 @@ const { isInvite, parseInvite } = require('scuttle-invite-schema')
 
 module.exports = function (server) {
   return function publish (params, callback) {
-    const invite = new Invite(params)
+    const invite = Object.assign({}, {
+      type: 'invite',
+    }, params, {
+      version: V1_SCHEMA_VERSION_STRING
+    })
+
+    if (!invite.recps || !invite.recps.include(server.id)) invite.recps = [...invite.recps, server.id]
+
     if (!isInvite(invite)) {
       var errors = invite.errors.map(e => e.field).join(', ')
       return callback(new Error(`invalid: ${errors}`))
