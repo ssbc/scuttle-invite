@@ -1,8 +1,8 @@
 const { describe } = require('tape-plus')
-const { PublishEvent, Server } = require('../../methods')
-const PublishInvite = require('../../../invites/async/publish')
-const PublishReply = require('../../../invites/async/reply')
-const GetInvite = require('../../../invites/async/getInvite')
+const { PublishEvent, Server } = require('../methods')
+const PublishInvite = require('../../invites/async/publish')
+const PublishReply = require('../../invites/async/reply')
+const GetInvite = require('../../invites/async/getInvite')
 
 describe('invites.async.reply', context => {
   let server, grace

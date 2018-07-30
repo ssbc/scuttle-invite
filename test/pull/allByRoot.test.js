@@ -1,7 +1,7 @@
 const { describe } = require('tape-plus')
-const { PublishEvent, Server } = require('../../methods')
+const { PublishEvent, Server } = require('../methods')
 const pull = require('pull-stream')
-const PullByRoot = require('../../../invites/pull/byRoot')
+const PullAllByRoot = require('../../invites/pull/allByRoot')
 const getContent = require('ssb-msg-content')
 
 describe('invites.pull.byRoot', context => {
@@ -12,7 +12,7 @@ describe('invites.pull.byRoot', context => {
     server = Server()
     grace = server.createFeed()
 
-    pullByRoot = PullByRoot(server)
+    pullByRoot = PullAllByRoot(server)
     publishEvent = PublishEvent(server)
   })
 
@@ -23,7 +23,7 @@ describe('invites.pull.byRoot', context => {
   context("Returns a collection of invites and their replies", (assert, next) => {
     populateDB((root, invites, replies) => {
       pull(
-        pullByRoot({ root: root.key }),
+        pullByRoot(root.key),
         pull.collect((err, data) => {
           var cloneInvites = JSON.parse(JSON.stringify(invites))
           var cloneReplies = JSON.parse(JSON.stringify(replies))
