@@ -6,28 +6,36 @@ You're hosting a gathering and all your favourite hermit crabs want to attend. Y
 
 Scuttle Invite provides an easy-to-use set of functions that allow you to invite and reply to any given `root` record in your database. Simply pass the gathering key / message ID as the `{ root }` in the publish parameters. To reply to an invite, make sure you pass the root ID again, and the branch ID (the invite).
 
+## How to use:
+
+```js
+const invites = ScuttleInvite(server)
+const params = { body: 'My fellow Hermies, come cluster at the official opening of Crabland, we'll be cracking open a few bottles of bubbly', root: rootId }
+invites.async.private.publish(params, callback)
+```
+
 ## API
 
 ```js
-invites: {
-  async: {
-    private: {
-      publish,
-      reply
-    },
+async: {
+  private: {
     publish,
-    reply,
-    getInvite,
-    getReply,
-    canReply,
-    isAccepted,
-  }
-  pull: {
-    byRoot
-  }
-  sync: {
-    isInvite,
-    isReply
-  }
+    reply
+  },
+  publish,
+  reply,
+  getInvite,
+  getReply,
+  canReply,
+  isAccepted,
+},
+pull: {
+  allByRoot,
+  invitesByRoot,
+  repliesByRoot
+},
+sync: {
+  isInvite,
+  isReply
 }
 ```
