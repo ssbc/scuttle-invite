@@ -3,7 +3,7 @@ const next = require('pull-next-query')
 const pullMerge = require('pull-merge')
 
 const { isMsgId } = require('ssb-ref')
-const { isInvite, isReply } = require('scuttle-invite-schema')
+const { isInvite, isReply } = require('ssb-invite-schema')
 
 module.exports = function (server) {
   return function invitesByRoot (rootId, opts = {}) {
