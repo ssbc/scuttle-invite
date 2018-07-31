@@ -24,43 +24,28 @@ module.exports = function (server) {
 
       const iWasInvited = Boolean(recps.find(recp => recp === server.id))
       if (!iWasInvited) return callback(new Error(`invalid: you are not invited`))
-        
-      const reply = Object.assign({},
-        params,
-        { 
-          type: 'invite-reply',
-          version: V1_SCHEMA_VERSION_STRING,
-          recps,
-          root,
-          branch: inviteKey
-        }
+
+      pull(
+        backlinksSource(root),
+        pull.collect((err, msgs) => {
+          if (err) return callback(err)
+
+          const reply = Object.assign({},
+            params,
+            {
+              type: 'invite-reply',
+              version: V1_SCHEMA_VERSION_STRING,
+              recps,
+              root,
+              branch: heads(msgs)
+            }
+          )
+
+          if (!isReply(reply)) return callback(buildError(reply))
+
+          server.publish(reply, callback)
+        })
       )
-      if (!isReply(reply)) return callback(buildError(reply))
-
-      server.publish(reply, callback)
-
-      // pull(
-      //   backlinksSource(root),
-      //   pull.collect((err, msgs) => {
-      //     if (err) return callback(err)
-
-      //     const reply = Object.assign({},
-      //       params,
-      //       { 
-      //         type: 'invite-reply',
-      //         version: V1_SCHEMA_VERSION_STRING,
-      //         recps,
-      //         root,
-      //         branch: heads(msgs)
-      //       }
-      //     )
-
-      //     console.log(reply)
-      //     if (!isReply(reply)) return callback(buildError(reply))
-
-      //     server.publish(reply, callback)
-      //   })
-      // )
     })
   }
 
