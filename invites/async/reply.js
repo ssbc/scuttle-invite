@@ -19,7 +19,6 @@ module.exports = function (server) {
   return function reply (inviteKey, params, callback) {
     getInvite(inviteKey, (err, invite) => {
       if (err) return callback(err)
-      if (!isInvite(invite)) return callback(new Error(`${inviteKey} is not a valid invite, cannot reply to this`))
 
       const { recps = [], root } = getContent(invite)
 

@@ -18,9 +18,6 @@ module.exports = function (server) {
   return function reply (inviteKey, params, callback) {
     getInvite(inviteKey, (err, invite) => {
       if (err) return callback(err)
-      var decryptedInvite = server.private.unbox(invite) || invite
-
-      if (!isInvite(decryptedInvite)) return callback(new Error(`${inviteKey} is not a valid invite, cannot reply to this`))
 
       const { recps = [], root } = getContent(invite)
 
