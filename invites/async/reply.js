@@ -1,4 +1,7 @@
 const getContent = require('ssb-msg-content')
+const pull = require('pull-stream')
+const { heads } = require('ssb-sort')
+
 const {
   isInvite,
   isReply,
@@ -21,7 +24,7 @@ module.exports = function (server) {
 
       const iWasInvited = Boolean(recps.find(recp => recp === server.id))
       if (!iWasInvited) return callback(new Error(`invalid: you are not invited`))
-
+        
       const reply = Object.assign({},
         params,
         { 
@@ -32,10 +35,41 @@ module.exports = function (server) {
           branch: inviteKey
         }
       )
-
       if (!isReply(reply)) return callback(buildError(reply))
 
       server.publish(reply, callback)
+
+      // pull(
+      //   backlinksSource(root),
+      //   pull.collect((err, msgs) => {
+      //     if (err) return callback(err)
+
+      //     const reply = Object.assign({},
+      //       params,
+      //       { 
+      //         type: 'invite-reply',
+      //         version: V1_SCHEMA_VERSION_STRING,
+      //         recps,
+      //         root,
+      //         branch: heads(msgs)
+      //       }
+      //     )
+
+      //     console.log(reply)
+      //     if (!isReply(reply)) return callback(buildError(reply))
+
+      //     server.publish(reply, callback)
+      //   })
+      // )
+    })
+  }
+
+
+  function backlinksSource (root) {
+    return server.backlinks.read({
+      query: [{
+        $filter: {dest: root}
+      }]
     })
   }
 }
