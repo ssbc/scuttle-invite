@@ -51,4 +51,12 @@ module.exports = function (server) {
       )
     })
   }
+
+  function backlinksSource (root) {
+    return server.backlinks.read({
+      query: [{
+        $filter: {dest: root}
+      }]
+    })
+  }
 }
