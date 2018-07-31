@@ -6,7 +6,7 @@ const {
   }
 } = require('ssb-invite-schema')
 
-const buildError = require('../../lib/buildError')
+const buildError = require('../../../lib/buildError')
 
 module.exports = function (server) {
   return function publish (params, callback) {
