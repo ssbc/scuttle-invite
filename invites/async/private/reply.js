@@ -26,9 +26,8 @@ module.exports = function (server) {
     getInvite(reply.branch, (err, invite) => {
       var decryptedInvite = server.private.unbox(invite) || invite
       if (err) return callback(err)
-      var whoami = server.whoami()
       var notInvited = decryptedInvite &&
-        (decryptedInvite.recipient !== whoami.id)
+        (decryptedInvite.recipient !== server.id)
       if (notInvited) return callback(new Error(`invalid: you are not invited`))
 
       server.private.publish(reply, reply.recps, (err, resp) => {

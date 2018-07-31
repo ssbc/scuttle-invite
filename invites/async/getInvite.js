@@ -1,5 +1,4 @@
 const { parseInvite } = require('ssb-invite-schema')
-const getContent = require('ssb-msg-content')
 
 module.exports = function (server) {
   return function getInvite (key, callback) {
