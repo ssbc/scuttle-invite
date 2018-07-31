@@ -16,9 +16,8 @@
     "pull-next-query": "^1.0.0",
     "pull-stream": "^3.6.7",
     "scuttle-inject": "^1.0.0",
-    "scuttle-invite-db": "0.0.7",
-    "ssb-backlinks": "^0.6.1",
-    "ssb-invite-schema": "0.0.8",
+    "ssb-backlinks": "^0.7.3",
+    "ssb-invite-schema": "0.0.10",
     "ssb-msg-content": "^1.0.1",
     "ssb-private": "^0.1.4",
     "ssb-sort": "^1.1.0"

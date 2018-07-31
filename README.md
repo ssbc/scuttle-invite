@@ -10,9 +10,29 @@ Scuttle Invite provides an easy-to-use set of functions that allow you to invite
 
 ```js
 const invites = ScuttleInvite(server)
-const params = { body: `My fellow Hermies, come cluster at the official opening of Crabland, we'll be cracking open a few bottles of bubbly`, root: rootId }
-invites.async.private.publish(params, callback)
+const params = {
+  body: `My fellow Hermies, come cluster at the official opening of Crabland, we'll be cracking open a few bottles of bubbly`,
+  root: rootId
+}
+invites.async.private.publish(params, (err, invite) => {
+  // returns the sent decrypted invite message
+})
 ```
+
+To reply to an invite:
+
+```js
+const invites = ScuttleInvite(server)
+const replyParams = {
+  body: 'glass of milk?',
+  root: rootId
+}
+invites.async.private.reply(inviteId, replyParams, (err, reply) => {
+  // returns the sent decrypted reply message
+})
+```
+
+See the [tests](./test) for more examples...
 
 ## API
 

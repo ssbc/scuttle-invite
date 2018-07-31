@@ -30,7 +30,7 @@ describe('invites.async.canReply', context => {
     publishEvent((err, event) => {
       params = Object.assign(params, {root: event.key})
       publishInvite(params, (err, invite) => {
-        CanReply(first)(invite, cannot => {
+        CanReply(first)(invite, (err, cannot) => {
           assert.notOk(cannot)
           next()
         })
@@ -46,7 +46,7 @@ describe('invites.async.canReply', context => {
     publishEvent((err, event) => {
       params = Object.assign(params, {root: event.key})
       publishInvite(params, (err, invite) => {
-        CanReply(second)(invite, can => {
+        CanReply(second)(invite, (err, can) => {
           assert.ok(can)
           next()
         })

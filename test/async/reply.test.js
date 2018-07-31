@@ -1,4 +1,5 @@
 const { describe } = require('tape-plus')
+const { isReply } = require('ssb-invite-schema')
 const { PublishEvent, Server } = require('../methods')
 const PublishInvite = require('../../invites/async/publish')
 const PublishReply = require('../../invites/async/reply')
@@ -28,71 +29,45 @@ describe('invites.async.reply', context => {
     server.close()
   })
 
-  context("fails to publish a reply when missing a 'root' record", (assert, next) => {
-    publishReply(defaultParams, (err, reply) => {
-      assert.ok(err, 'Returns an error')
-      assert.equal(err.message, "invalid: data.root, data.branch", "Provides an error message")
-      next()
+  context("Successfully publishing a reply", (assert, next) => {
+    publishEvent((err, event) => {
+      var inviteParams = { root: event.key, recps: [server.id], body: 'yo party at mine this friday!' }
+      publishInvite(inviteParams, (err, invite) => {
+        var replyParams = { accept: true, body: 'I will bring crepes!' }
+        publishReply(invite.key, replyParams, (err, reply) => {
+          assert.ok(reply, "Success")
+          assert.notOk(err, "Errors are null")
+          assert.ok(isReply(reply))
+          next()
+        })
+      })
     })
   })
 
-  context("fails to publish a reply without an 'invite' record", (assert, next) => {
+  context("fails to publish a reply when missing a 'accept' property", (assert, next) => {
     publishEvent((err, event) => {
-      var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
-      publishReply(defaultParamsWithRoot, (err, reply) => {
-        assert.ok(err)
-        assert.equal(err.message, "invalid: data.branch", "Provides an error message")
+      var inviteParams = { root: event.key, recps: [server.id], body: 'yo party at mine this friday!' }
+      publishInvite(inviteParams, (err, invite) => {
+        var replyParams = { body: 'I will bring crepes!' }
+        publishReply(invite.key, replyParams, (err, reply) => {
+          assert.ok(err, "fails")
+          assert.equal(err.message, 'invalid: data.accept')
+          next()
+        })
+      })
+    })
+  })
+
+  context("fails to reply to a non-invite", (assert, next) => {
+    server.publish({ type: 'post', text: 'want to come to my party?' }, (err, notInvite) => {
+      var replyParams = { accept: true, body: 'I will bring crepes!' }
+
+      publishReply(notInvite.key, replyParams, (err, reply) => {
+        assert.ok(err, "fails")
+        assert.ok(err.message.match(/is not a valid invite/), "told it's not a valid invite")
         next()
       })
     })
   })
 
-  context("fails to publish a reply when not invited", (assert, next) => {
-    var third = server.createFeed()
-    PublishEvent(third)((err, event) => {
-      var defaultParamsWithRoot = Object.assign({}, defaultParams, { recps: [third.id, grace.id], root: event.key })
-      PublishInvite(third)(defaultParamsWithRoot, (err, invite) => {
-        var replyParams = Object.assign({}, defaultParams, {
-          root: event.key,
-          branch: invite.id,
-          recps: [...defaultParams.recps, server.id]
-        })
-        publishReply(replyParams, (err, reply) => {
-          assert.ok(err)
-          assert.equal(err.message, "invalid: you are not invited")
-          next()
-        })
-      })
-    })
-  })
-
-  context("Successfully publishing an invite", (assert, next) => {
-    publishEvent((err, event) => {
-      var defaultParamsWithRoot = Object.assign({}, defaultParams, { root: event.key })
-      publishInvite(defaultParamsWithRoot, (err, invite) => {
-        var replyParams = Object.assign({}, defaultParams, {
-          root: event.key,
-          branch: invite.id,
-        })
-        publishReply(replyParams, (err, reply) => {
-          assert.ok(reply, "Success")
-          assert.notOk(err, "Errors are null")
-
-          const { id, timestamp } = reply
-          var reply = Object.assign({}, {
-            id,
-            author: server.id,
-            recipient: grace.id,
-            timestamp,
-            type: 'invite-reply',
-            version: 'v1'
-          }, replyParams)
-          delete reply.recps
-
-          assert.deepEqual(reply, reply, "Returns a parsed reply")
-          next()
-        })
-      })
-    })
-  })
 })

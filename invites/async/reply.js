@@ -1,4 +1,9 @@
+const getContent = require('ssb-msg-content')
+const pull = require('pull-stream')
+const { heads } = require('ssb-sort')
+
 const {
+  isInvite,
   isReply,
   parseReply,
   versionStrings: {
@@ -6,35 +11,50 @@ const {
   }
 } = require('ssb-invite-schema')
 
+const buildError = require('../../lib/buildError')
 
 module.exports = function (server) {
   const getInvite = require('./getInvite')(server)
 
-  return function reply (params, callback) {
-    const reply = Object.assign({}, {
-      type: 'invite-reply',
-    }, params, {
-      version: V1_SCHEMA_VERSION_STRING
-    })
-
-    if (!reply.recps) reply.recps = []
-    if (!reply.recps.includes(server.id)) reply.recps = [...reply.recps, server.id]
-
-    if (!isReply(reply)) {
-      var errors = reply.errors.map(e => e.field).join(', ')
-      return callback(new Error(`invalid: ${errors}`))
-    }
-
-    getInvite(reply.branch, (err, invite) => {
+  return function reply (inviteKey, params, callback) {
+    getInvite(inviteKey, (err, invite) => {
       if (err) return callback(err)
-      var whoami = server.whoami()
-      var notInvited = invite.recipient !== whoami.id
-      if (notInvited) return callback(new Error(`invalid: you are not invited`))
+      if (!isInvite(invite)) return callback(new Error(`${inviteKey} is not a valid invite, cannot reply to this`))
 
-      server.publish(reply, (err, data) => {
-        if (err) return callback(err)
-        callback(null, parseReply(data))
-      })
+      const { recps = [], root } = getContent(invite)
+
+      const iWasInvited = Boolean(recps.find(recp => recp === server.id))
+      if (!iWasInvited) return callback(new Error(`invalid: you are not invited`))
+
+      pull(
+        backlinksSource(root),
+        pull.collect((err, msgs) => {
+          if (err) return callback(err)
+
+          const reply = Object.assign({},
+            params,
+            {
+              type: 'invite-reply',
+              version: V1_SCHEMA_VERSION_STRING,
+              recps,
+              root,
+              branch: heads(msgs)
+            }
+          )
+
+          if (!isReply(reply)) return callback(buildError(reply))
+
+          server.publish(reply, callback)
+        })
+      )
+    })
+  }
+
+  function backlinksSource (root) {
+    return server.backlinks.read({
+      query: [{
+        $filter: {dest: root}
+      }]
     })
   }
 }

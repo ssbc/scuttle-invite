@@ -2,9 +2,10 @@ const { parseReply } = require('ssb-invite-schema')
 
 module.exports = function (server) {
   return function getReply (key, callback) {
-    server.invites.getReply(key, (err, reply) => {
+    server.get(key, (err, value) => {
       if (err) return callback(err)
-      return callback(null, parseReply(reply))
+      const reply = { key, value }
+      return callback(null, reply)
     })
   }
 }
