@@ -10,6 +10,7 @@ const {
     V1_SCHEMA_VERSION_STRING
   }
 } = require('ssb-invite-schema')
+
 const buildError = require('../../lib/buildError')
 
 module.exports = function (server) {
@@ -51,7 +52,6 @@ module.exports = function (server) {
       )
     })
   }
-
 
   function backlinksSource (root) {
     return server.backlinks.read({
