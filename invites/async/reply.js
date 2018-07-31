@@ -41,6 +41,9 @@ module.exports = function (server) {
             }
           )
 
+          if (!reply.recps) reply.recps = []
+          if (!reply.recps.includes(server.id)) reply.recps = [...reply.recps, server.id]
+
           if (!isReply(reply)) return callback(buildError(reply))
 
           server.publish(reply, callback)
