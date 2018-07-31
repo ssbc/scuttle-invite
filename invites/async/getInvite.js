@@ -1,5 +1,4 @@
-const { parseInvite } = require('scuttle-invite-schema')
-const getContent = require('ssb-msg-content')
+const { parseInvite } = require('ssb-invite-schema')
 
 module.exports = function (server) {
   return function getInvite (key, callback) {

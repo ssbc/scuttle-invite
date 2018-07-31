@@ -4,7 +4,7 @@ const {
   versionStrings: {
     V1_SCHEMA_VERSION_STRING
   }
-} = require('scuttle-invite-schema')
+} = require('ssb-invite-schema')
 
 module.exports = function (server) {
   return function publish (params, callback) {
