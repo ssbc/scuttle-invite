@@ -6,6 +6,8 @@ const {
   }
 } = require('ssb-invite-schema')
 
+const buildError = require('../../lib/buildError')
+
 module.exports = function (server) {
   return function publish (params, callback) {
     // params must contain: root, recps
@@ -15,10 +17,7 @@ module.exports = function (server) {
       version: V1_SCHEMA_VERSION_STRING
     })
 
-    if (!isInvite(invite)) {
-      var errors = invite.errors.map(e => e.field).join(', ')
-      return callback(new Error(`invalid: ${errors}`))
-    }
+    if (!isInvite(invite)) return callback(buildError(invite))
 
     if (!invite.recps.includes(server.id)) invite.recps.push(server.id)
 

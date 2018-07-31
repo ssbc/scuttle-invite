@@ -10,6 +10,8 @@ const {
   }
 } = require('ssb-invite-schema')
 
+const buildError = require('../../lib/buildError')
+
 module.exports = function (server) {
   const getInvite = require('../getInvite')(server)
 
@@ -41,14 +43,11 @@ module.exports = function (server) {
             }
           )
 
-          if (!reply.recps) reply.recps = []
-          if (!reply.recps.includes(server.id)) reply.recps = [...reply.recps, server.id]
-
           if (!isReply(reply)) return callback(buildError(reply))
 
-          server.private.publish(reply, reply.recps, (err, resp) => {
+          server.private.publish(reply, reply.recps, (err, repl) => {
             if (err) return callback(err)
-            var decrypted = server.private.unbox(resp)
+            var decrypted = server.private.unbox(repl)
             callback(null, decrypted)
           })
         })
