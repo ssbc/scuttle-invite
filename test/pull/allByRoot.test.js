@@ -50,11 +50,11 @@ describe('invites.pull.byRoot', context => {
     publishEvent((err, event) => {
       pull(
         pull.values([
-          { type: 'invite', version: 'v1', recps: [grace.id, server.id], body: '1', root: event.key },
-          { type: 'invite', version: 'v1', recps: [grace.id, server.id], body: '2', root: event.key },
-          { type: 'invite', version: 'v1', recps: [grace.id, server.id], body: '3', root: event.key },
-          { type: 'invite', version: 'v1', recps: [grace.id, server.id], body: '4', root: event.key },
-          { type: 'invite', version: 'v1', recps: [grace.id, server.id], body: '5', root: event.key }
+          { type: 'invite', version: '1', recps: [grace.id, server.id], body: '1', root: event.key },
+          { type: 'invite', version: '1', recps: [grace.id, server.id], body: '2', root: event.key },
+          { type: 'invite', version: '1', recps: [grace.id, server.id], body: '3', root: event.key },
+          { type: 'invite', version: '1', recps: [grace.id, server.id], body: '4', root: event.key },
+          { type: 'invite', version: '1', recps: [grace.id, server.id], body: '5', root: event.key }
         ]),
         pull.asyncMap(server.publish),
         pull.collect((err, invites) => {
@@ -62,11 +62,11 @@ describe('invites.pull.byRoot', context => {
 
           pull(
             pull.values([
-              { type: 'invite-reply', version: 'v1', recps: [grace.id, server.id], body: '1', root: event.key, branch: first.key, accept: true },
-              { type: 'invite-reply', version: 'v1', recps: [grace.id, server.id], body: '2', root: event.key, branch: second.key, accept: true },
-              { type: 'invite-reply', version: 'v1', recps: [grace.id, server.id], body: '3', root: event.key, branch: third.key, accept: true },
-              { type: 'invite-reply', version: 'v1', recps: [grace.id, server.id], body: '4', root: event.key, branch: fourth.key, accept: true },
-              { type: 'invite-reply', version: 'v1', recps: [grace.id, server.id], body: '5', root: event.key, branch: fifth.key, accept: true }
+              { type: 'invite-reply', version: '1', recps: [grace.id, server.id], body: '1', root: event.key, branch: first.key, accept: true },
+              { type: 'invite-reply', version: '1', recps: [grace.id, server.id], body: '2', root: event.key, branch: second.key, accept: true },
+              { type: 'invite-reply', version: '1', recps: [grace.id, server.id], body: '3', root: event.key, branch: third.key, accept: true },
+              { type: 'invite-reply', version: '1', recps: [grace.id, server.id], body: '4', root: event.key, branch: fourth.key, accept: true },
+              { type: 'invite-reply', version: '1', recps: [grace.id, server.id], body: '5', root: event.key, branch: fifth.key, accept: true }
             ]),
             pull.asyncMap(grace.publish),
             pull.collect((err, replies) => {
