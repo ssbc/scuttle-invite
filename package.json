@@ -15,7 +15,7 @@
     "pull-merge": "^1.0.4",
     "pull-next-query": "^1.0.0",
     "pull-stream": "^3.6.7",
-    "scuttle-inject": "^1.0.0",
+    "scuttle-inject": "^1.0.3",
     "ssb-backlinks": "^0.7.3",
     "ssb-invite-schema": "0.0.10",
     "ssb-msg-content": "^1.0.1",
