@@ -27,7 +27,7 @@ const replyParams = {
   body: 'glass of milk?',
   root: rootId
 }
-invites.async.private.reply(inviteId, replyParams, (err, reply) => {
+invites.async.private.reply(inviteMsgOrKey, replyParams, (err, reply) => {
   // returns the sent decrypted reply message
 })
 ```

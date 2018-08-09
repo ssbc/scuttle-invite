@@ -2,6 +2,8 @@ const { isInvite } = require('ssb-invite-schema')
 
 module.exports = function (server) {
   return function getInvite (key, callback) {
+    if (isInvite(key)) return callback(null, key)
+
     server.get(key, (err, value) => {
       if (err) return callback(err)
       const invite = { key, value }
