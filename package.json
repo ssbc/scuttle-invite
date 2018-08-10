@@ -9,9 +9,6 @@
   "description": "apply invite and reply logic to an ssb root record",
   "main": "index.js",
   "dependencies": {
-    "depject": "^4.1.1",
-    "depnest": "^1.3.0",
-    "mutant": "^3.22.1",
     "pull-merge": "^1.0.4",
     "pull-next-query": "^1.0.0",
     "pull-stream": "^3.6.7",
@@ -20,10 +17,12 @@
     "ssb-invite-schema": "0.0.10",
     "ssb-msg-content": "^1.0.1",
     "ssb-private": "^0.2.3",
+    "ssb-ref": "^2.11.1",
     "ssb-sort": "^1.1.0"
   },
   "devDependencies": {
     "scuttle-testbot": "^1.1.6",
+    "ssb-query": "^2.1.0",
     "tap-diff": "^0.1.1",
     "tape": "^4.9.1",
     "tape-plus": "^1.0.0"
