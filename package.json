@@ -16,12 +16,12 @@
     "ssb-backlinks": "^0.7.3",
     "ssb-invite-schema": "0.0.10",
     "ssb-msg-content": "^1.0.1",
-    "ssb-private": "^0.2.3",
     "ssb-ref": "^2.11.1",
     "ssb-sort": "^1.1.0"
   },
   "devDependencies": {
     "scuttle-testbot": "^1.1.6",
+    "ssb-private": "^0.2.3",
     "ssb-query": "^2.1.0",
     "tap-diff": "^0.1.1",
     "tape": "^4.9.1",
